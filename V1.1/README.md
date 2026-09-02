@@ -28,7 +28,7 @@ It supports both 🐧 Linux/Fedora and 🪟 Windows.
 
 ## 🐧 1. Linux / Fedora
 
-### Step 1 — Clone the repository
+### Step 1 — Clone the project
 
     git clone https://github.com/sangrechy/project_netvision.git
     cd project_netvision/V1.1
@@ -39,25 +39,43 @@ For Fedora:
 
     sudo dnf install wireshark-cli
 
-Check:
+Check if it installed correctly:
 
     tshark --version
 
-### Step 3 — Install dependencies
+If packet capture gives permission issues, test with:
 
-Backend:
+    sudo tshark -i wlan0 -c 5
+
+### Step 3 — Enable your hotspot
+
+Example using NetworkManager:
+
+    nmcli device wifi hotspot ifname wlan0 ssid "MyHotspot" password "yourpassword"
+
+Check your hotspot interface:
+
+    ip addr show
+
+NetVision normally uses the hotspot interface and subnet for monitoring.
+
+### Step 4 — Install backend dependencies
 
     cd backend
     npm install
 
-Frontend:
+### Step 5 — Install frontend dependencies
 
     cd ../frontend
     npm install
 
-### Step 4 — Run NetVision
+### Step 6 — Start NetVision
 
-From the V1.1 folder:
+Go back to the V1.1 folder:
+
+    cd ..
+
+Start the project:
 
     ./start.sh
 
@@ -69,42 +87,54 @@ Then open:
 
 ## 🪟 2. Windows
 
-### Step 1 — Clone the repository
+### Step 1 — Clone the project
 
     git clone https://github.com/sangrechy/project_netvision.git
     cd project_netvision\V1.1
 
 ### Step 2 — Install Wireshark
 
-Install Wireshark with **Npcap** and make sure TShark is available.
+Download and install Wireshark from the official website:
 
-Check:
+    https://www.wireshark.org/download.html
+
+During installation, make sure TShark and Npcap are installed.
+
+After installation, open a new PowerShell window and check:
 
     tshark --version
 
-### Step 3 — Install dependencies
+If `tshark` is not recognized, make sure the Wireshark installation folder is added to your system PATH.
 
-Backend:
+### Step 3 — Install backend dependencies
 
     cd backend
     npm install
 
-Frontend:
+### Step 4 — Install frontend dependencies
 
     cd ..\frontend
     npm install
 
-### Step 4 — Run NetVision
+### Step 5 — Enable Windows Mobile Hotspot
+
+Turn on:
+
+    Settings → Network & Internet → Mobile hotspot
+
+Connect a device to the hotspot.
+
+### Step 6 — Run NetVision
 
 Go back to the V1.1 folder:
 
     cd ..
 
-Then run:
+Run:
 
     .\run_netvision.bat
 
-Open:
+Then open:
 
     http://localhost:5173
 
