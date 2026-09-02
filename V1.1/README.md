@@ -1,204 +1,117 @@
-# NetVision V1 — Passive Hotspot Traffic Intelligence Dashboard
+# 🌐 NetVision V1.1
 
-Real-time network monitoring dashboard for devices connected to your Linux hotspot.
-Passively captures, parses, and visualises traffic — no MITM, no decryption, no packet injection.
+This is the main working version of NetVision.
 
----
+NetVision V1.1 is a real-time network traffic monitoring dashboard. It captures traffic from your hotspot/network, detects connected devices, identifies protocols, and shows everything live in the dashboard.
 
-## ⚡ Quick Start — Mock Mode (no tshark, no sudo)
-
-```bash
-# Terminal 1 — Backend (fake data)
-cd netvision-v1/backend
-npm install
-npm run mock          # → node mock-server.js
-
-# Terminal 2 — Frontend
-cd netvision-v1/frontend
-npm install
-npm run dev
-```
-
-Open **http://localhost:5173** — live packets flow immediately.
+It supports both 🐧 Linux/Fedora and 🪟 Windows.
 
 ---
 
-## 🔴 Real Capture Mode
+## What's in V1.1
 
-### 1. Install tshark
-
-**Fedora / RHEL:**
-```bash
-sudo dnf install wireshark-cli
-```
-
-**Ubuntu / Debian:**
-```bash
-sudo apt install tshark
-# When prompted "Should non-superusers be able to capture packets?" → Yes
-```
-
-**Allow tshark without sudo (optional):**
-```bash
-sudo setcap cap_net_raw,cap_net_admin+eip $(which tshark)
-```
-
-### 2. Enable your hotspot
-
-Using NetworkManager (creates 10.42.0.x subnet by default):
-```bash
-nmcli device wifi hotspot ifname wlan0 ssid "MyHotspot" password "yourpassword"
-```
-
-Find your hotspot interface:
-```bash
-ip addr show | grep "10.42"
-# e.g.: inet 10.42.0.1/24 brd 10.42.0.255 scope global wlan0
-```
-
-### 3. Start the backend
-
-```bash
-cd netvision-v1/backend
-npm install
-
-# Auto-detect interface:
-sudo node server.js
-
-# Or specify manually:
-sudo HOTSPOT_IFACE=wlan0 HOTSPOT_SUBNET=10.42. node server.js
-```
-
-**Environment variables:**
-
-| Variable         | Default  | Description                             |
-|------------------|----------|-----------------------------------------|
-| `PORT`           | `3001`   | WebSocket server port                   |
-| `HOTSPOT_IFACE`  | auto     | Interface to capture on                 |
-| `HOTSPOT_SUBNET` | `10.42.` | IP prefix of hotspot clients            |
-| `AUTO_START`     | `true`   | Auto-start capture on boot              |
-
-### 4. Start the frontend
-
-```bash
-cd netvision-v1/frontend
-npm install
-npm run dev
-```
-
-Open **http://localhost:5173**
+- Real-time traffic monitoring
+- Connected device detection
+- Protocol detection
+- DNS and domain resolution
+- TLS SNI detection
+- Upload/download traffic tracking
+- Live updates using Socket.IO
+- React dashboard
+- Traffic recording
+- Linux/Fedora support
+- Windows support
 
 ---
 
-## 📦 Install (full list)
+# 📥 Installation
 
-### Backend
-```bash
-cd backend && npm install
-# Packages: express, socket.io, cors, nodemon (dev)
-```
+## 🐧 1. Linux / Fedora
 
-### Frontend
-```bash
-cd frontend && npm install
-# Packages: react, react-dom, socket.io-client
-# Dev: vite, @vitejs/plugin-react, tailwindcss, postcss, autoprefixer
-```
+### Step 1 — Clone the repository
 
----
+    git clone https://github.com/sangrechy/project_netvision.git
+    cd project_netvision/V1.1
 
-## 🖥 UI Features
+### Step 2 — Install TShark
 
-| Feature | Detail |
-|---------|--------|
-| **Device Sidebar** | ARP+DHCP detected devices with name, IP, MAC, vendor, online status, ↑/↓ traffic bars |
-| **Domain Resolution** | SNI → DNS cache → HTTP Host → IP fallback priority chain |
-| **Live Traffic Table** | Rolling 5-second window, auto-purges old rows |
-| **Protocol Badges** | Color-coded: DNS, TLS, QUIC, HTTP, HTTP2, TCP, UDP, DHCP, ICMP |
-| **Payload Previews** | TLS AppData hex, QUIC encrypted bytes, HTTP method+path, DNS query/response |
-| **Direction** | ↑ Upload / ↓ Download correctly based on hotspot subnet ownership |
-| **Footer Stats** | Live counters: TCP / UDP / DNS / TLS / HTTP / QUIC / OTHER |
-| **Recording** | JSON or CSV, timestamped files in `backend/recordings/` |
-| **Interface Selector** | Switch capture interface from the UI without restart |
-| **CRT Aesthetic** | Scanline overlay, glow effects, cyber-terminal monospace design |
+For Fedora:
 
----
+    sudo dnf install wireshark-cli
 
-## 📁 Project Structure
+Check:
 
-```
-netvision-v1/
-├── backend/
-│   ├── server.js         Main Express + Socket.IO server
-│   ├── mock-server.js    Fake-data server for UI testing
-│   ├── tshark.js         tshark process manager (EK-format)
-│   ├── parser.js         Packet field extraction, DNS cache population
-│   ├── dns-cache.js      Short-lived IP→domain cache (5-min TTL)
-│   ├── devices.js        ARP + DHCP + OUI device tracking
-│   ├── sockets.js        Socket.IO events + stats + recording
-│   ├── oui.js            MAC OUI vendor database (~300 entries)
-│   ├── package.json
-│   └── recordings/       Saved capture files
-│
-└── frontend/
-    ├── src/
-    │   ├── App.jsx                Root state + 5-sec rolling buffer
-    │   ├── socket.js              Socket.IO singleton
-    │   ├── index.css              Cyber-terminal global styles
-    │   └── components/
-    │       ├── Topbar.jsx         Header, controls, clock
-    │       ├── DeviceSidebar.jsx  Device cards with vendor + traffic bars
-    │       ├── TrafficTable.jsx   Rolling live packet table
-    │       └── FooterBar.jsx      Protocol stat counters
-    ├── index.html
-    ├── vite.config.js
-    ├── tailwind.config.js
-    └── package.json
-```
+    tshark --version
+
+### Step 3 — Install dependencies
+
+Backend:
+
+    cd backend
+    npm install
+
+Frontend:
+
+    cd ../frontend
+    npm install
+
+### Step 4 — Run NetVision
+
+From the V1.1 folder:
+
+    ./start.sh
+
+Then open:
+
+    http://localhost:5173
 
 ---
 
-## ⚙️ Custom Subnet
+## 🪟 2. Windows
 
-If your hotspot uses a different subnet:
-```bash
-sudo HOTSPOT_SUBNET=192.168.43. HOTSPOT_IFACE=wlan0 node server.js
-```
+### Step 1 — Clone the repository
+
+    git clone https://github.com/sangrechy/project_netvision.git
+    cd project_netvision\V1.1
+
+### Step 2 — Install Wireshark
+
+Install Wireshark with **Npcap** and make sure TShark is available.
+
+Check:
+
+    tshark --version
+
+### Step 3 — Install dependencies
+
+Backend:
+
+    cd backend
+    npm install
+
+Frontend:
+
+    cd ..\frontend
+    npm install
+
+### Step 4 — Run NetVision
+
+Go back to the V1.1 folder:
+
+    cd ..
+
+Then run:
+
+    .\run_netvision.bat
+
+Open:
+
+    http://localhost:5173
 
 ---
 
-## 🔒 What This Does NOT Do
+## ⚠️ Note
 
-- ✗ WiFi cracking or deauthentication
-- ✗ Decrypt HTTPS / SSL stripping
-- ✗ MITM attacks or ARP spoofing
-- ✗ Packet injection or traffic modification
-- ✗ Monitor-mode sniffing of nearby networks
-- ✓ Passively reads packets flowing through your own hotspot gateway
+This project is made for monitoring networks you own or have permission to monitor.
 
----
-
-## Troubleshooting
-
-**Permission denied:**
-```bash
-sudo tshark -i wlan0 -c 5    # test manually
-```
-
-**No devices in sidebar:**
-```bash
-ip neigh show                 # check ARP table
-cat /var/lib/NetworkManager/dnsmasq-*.leases  # check DHCP
-```
-
-**Wrong interface / no traffic:**
-```bash
-ip link show                  # list all interfaces
-ip addr show                  # find which has 10.42.x.x
-```
-
-**Fedora firewall:**
-```bash
-sudo firewall-cmd --add-port=3001/tcp --permanent
-sudo firewall-cmd --reload
-```
+No Wi-Fi cracking, deauth, MITM, packet injection, or HTTPS decryption stuff here.
