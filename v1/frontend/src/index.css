@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green:        #00ff88;
+  --green-dim:    #00cc66;
+  --green-faint:  rgba(0,255,136,0.06);
+  --cyan:         #00e5ff;
+  --amber:        #ffb300;
+  --red:          #ff3b5c;
+  --purple:       #bb88ff;
+  --teal:         #00ddcc;
+  --bg:           #050a0e;
+  --bg-panel:     #070d12;
+  --bg-card:      #0b1820;
+  --bg-card-hover:#0e2018;
+  --border:       #0d2218;
+  --border-bright:#00ff88;
+  --text:         #a0ffb8;
+  --text-dim:     #3d7a52;
+  --text-muted:   #1a3828;
+}
+
+/* ── Scanline CRT overlay ── */
+.scanline-overlay {
+  pointer-events: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px, transparent 2px,
+    rgba(0,255,136,0.013) 2px, rgba(0,255,136,0.013) 4px
+  );
+}
+.scanline-sweep {
+  pointer-events: none;
+  position: fixed; left: 0; right: 0; height: 160px;
+  background: linear-gradient(transparent, rgba(0,255,136,0.035), transparent);
+  animation: sweep 10s linear infinite;
+  z-index: 99;
+}
+@keyframes sweep { from { top: -160px; } to { top: 100vh; } }
+
+/* ── Animations ── */
+@keyframes blink       { 0%,100% { opacity:1 } 50% { opacity:0 } }
+@keyframes pulse-green { 0%,100% { box-shadow:0 0 4px var(--green) } 50% { box-shadow:0 0 16px var(--green),0 0 32px var(--green-dim) } }
+@keyframes fadeInRow   { from { opacity:0; transform:translateX(-4px); background:rgba(0,255,136,0.07) } to { opacity:1; transform:none; background:transparent } }
+@keyframes flicker     { 0%,95%,100% { opacity:1 } 96% { opacity:.88 } 97.5% { opacity:1 } 99% { opacity:.93 } }
+@keyframes spin        { to { transform:rotate(360deg) } }
+
+.blink    { animation: blink 1s step-end infinite; }
+.flicker  { animation: flicker 8s ease-in-out infinite; }
+.spin     { animation: spin .7s linear infinite; display:inline-block; }
+
+/* ── Glow text ── */
+.glow-green { text-shadow: 0 0 8px var(--green), 0 0 20px var(--green-dim); }
+.glow-cyan  { text-shadow: 0 0 8px var(--cyan); }
+.glow-amber { text-shadow: 0 0 8px var(--amber); }
+
+/* ── Capture LED ── */
+.led {
+  width:8px; height:8px; border-radius:50%;
+  display:inline-block; flex-shrink:0;
+}
+.led-green { background:var(--green); animation:pulse-green 2s ease-in-out infinite; }
+.led-red   { background:var(--red);   box-shadow:0 0 6px var(--red); }
+.led-amber { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+.led-dim   { background:#1a3828; }
+
+/* ── Device cards ── */
+.device-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.device-card:hover {
+  border-color: var(--green-dim);
+  background: var(--bg-card-hover);
+}
+.device-card.selected {
+  border-color: var(--green);
+  background: #0e2a18;
+  box-shadow: 0 0 12px rgba(0,255,136,0.18), inset 0 0 20px rgba(0,255,136,0.03);
+}
+
+/* ── Traffic table ── */
+.t-table { border-collapse: collapse; width:100%; }
+.t-table th {
+  color: var(--text-dim);
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding: 5px 8px;
+  white-space: nowrap;
+  font-weight: 500;
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 2;
+}
+.t-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #08160e;
+  font-size: .68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+.t-table tr:last-child td { border-bottom: none; }
+.t-table tbody tr { animation: fadeInRow .35s ease-out; }
+.t-table tbody tr:hover { background: #0a1a10 !important; }
+
+/* ── Protocol badges ── */
+.badge {
+  font-size: .55rem; padding: 1px 5px; border-radius: 2px;
+  letter-spacing: .06em; font-weight: 700; display:inline-block;
+  white-space:nowrap;
+}
+.b-DNS  { background:#001a33; color:var(--cyan);   border:1px solid #003366; }
+.b-TLS  { background:#1a1000; color:var(--amber);  border:1px solid #332200; }
+.b-HTTP,
+.b-HTTP2{ background:#0d001a; color:var(--purple); border:1px solid #220033; }
+.b-TCP  { background:#001a0d; color:var(--green);  border:1px solid #003322; }
+.b-UDP  { background:#001a1a; color:var(--teal);   border:1px solid #003333; }
+.b-QUIC { background:#1a000d; color:#ff88cc;       border:1px solid #330022; }
+.b-mDNS { background:#001a33; color:#55ddff;       border:1px solid #003355; }
+.b-ICMP { background:#1a0a00; color:#ff8844;       border:1px solid #331500; }
+.b-DHCP { background:#0d1a00; color:#aaff44;       border:1px solid #223300; }
+.b-OTHER{ background:#1a0a00; color:#ff8844;       border:1px solid #331500; }
+
+/* ── Inputs / selects / buttons ── */
+input[type="text"], select {
+  background: #0a1520;
+  border: 1px solid var(--border);
+  color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: 3px 8px;
+  outline: none;
+  transition: border-color .2s;
+}
+input[type="text"]:focus, select:focus { border-color: var(--green-dim); }
+select option { background: #0a1520; }
+
+.btn {
+  background: transparent;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  padding: 4px 12px;
+  letter-spacing: .07em;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 2px;
+}
+.btn-green { border:1px solid var(--green); color:var(--green); }
+.btn-green:hover { background:rgba(0,255,136,.1); box-shadow:0 0 8px rgba(0,255,136,.3); }
+.btn-red   { border:1px solid var(--red);   color:var(--red);   }
+.btn-red:hover   { background:rgba(255,59,92,.1);  box-shadow:0 0 8px rgba(255,59,92,.3); }
+.btn-amber { border:1px solid var(--amber); color:var(--amber); }
+.btn-amber:hover { background:rgba(255,179,0,.1);  box-shadow:0 0 8px rgba(255,179,0,.3); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width:3px; height:3px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--green-dim); border-radius:2px; }
+
+/* ── Traffic bar ── */
+.tbar-bg { background:#050a0e; height:2px; border-radius:1px; }
+.tbar-fill { height:100%; border-radius:1px; transition:width .6s ease; }

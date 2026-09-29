@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+
+# Packet captures & recordings
+**/recordings/*.json
+**/recordings/*.csv
+!**/recordings/.gitkeep
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db

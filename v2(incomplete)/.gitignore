@@ -1,0 +1,7 @@
+node_modules/
+dist/
+backend/recordings/*.json
+backend/recordings/*.csv
+!backend/recordings/.gitkeep
+.DS_Store
+*.log
